@@ -2,6 +2,7 @@ package services
 
 import (
 	"fmt"
+	"image"
 	"io"
 	"mime/multipart"
 	"net/http"
@@ -32,8 +33,30 @@ func CreatePDF(files []*multipart.FileHeader, r *http.Request) (string, error) {
 			return "", fmt.Errorf("gagal menyimpan file: %v", err)
 		}
 
-		pdf.AddPage()
-		pdf.Image(filePath, 10, 10, 190, 0, false, "", 0, "")
+		imgFile, err := os.Open(filePath)
+		if err != nil {
+			return "", fmt.Errorf("gagal membuka file gambar: %v", err)
+		}
+		defer imgFile.Close()
+
+		img, _, err := image.DecodeConfig(imgFile)
+		if err != nil {
+			return "", fmt.Errorf("gagal mendekode gambar: %v", err)
+		}
+
+		const pageWidth, pageHeight = 210.0, 297.0
+		imgHeight := float64(img.Height) * 25.4 / 72.0
+
+		numPages := int(imgHeight / pageHeight)
+		if imgHeight > float64(numPages)*pageHeight {
+			numPages++
+		}
+
+		for i := 0; i < numPages; i++ {
+			pdf.AddPage()
+			yOffset := float64(i) * pageHeight
+			pdf.ImageOptions(filePath, 0, -yOffset, pageWidth, imgHeight, false, gofpdf.ImageOptions{ReadDpi: true}, 0, "")
+		}
 	}
 
 	pdfFilePath := filepath.Join("results", "converted.pdf")
