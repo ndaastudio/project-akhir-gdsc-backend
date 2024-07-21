@@ -4,14 +4,14 @@ import (
 	"log"
 	"net/http"
 
+	"project-akhir-gdsc-backend/routes"
+
 	"github.com/gorilla/mux"
 )
 
 func main() {
 	router := mux.NewRouter()
-	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Hello World!"))
-	})
+	routes.AppRoutes(router)
 
 	log.Println("Server aktif!")
 	log.Println("http://localhost:3000")
