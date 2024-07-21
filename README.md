@@ -18,5 +18,3 @@ Dibuat untuk memenuhi tugas project akhir Google Developer Student Clubs divisi 
 | Parameter | Type                  | Description  |
 | :-------- | :-------------------- | :----------- |
 | `images`  | `multipart/form-data` | **Required** |
-
-\*masih on progress...
